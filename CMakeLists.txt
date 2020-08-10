@@ -8,3 +8,4 @@ if (TEST_OPTION)
 endif()
 
 add_executable (ivo_sandbox main.cpp)
+target_link_libraries(ivo_sandbox mysqlclient)
