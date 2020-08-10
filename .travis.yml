@@ -3,6 +3,7 @@ language: generic
 dist: bionic
 
 before_install:
+  - START_DIR=${PWD}
   - sudo apt-get -y install libmysqlclient-dev
 
 matrix:
@@ -61,7 +62,6 @@ matrix:
 
 
 script:
-  - START_DIR=${PWD}
   - echo "START DIR $START_DIR"
   - mkdir foo && cd foo
   - pwd
