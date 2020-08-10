@@ -62,7 +62,7 @@ matrix:
 
 script:
   - START_DIR=${PWD}
-  - echo "START DIR : $START_DIR"
+  - echo "START DIR $START_DIR"
   - mkdir foo && cd foo
   - pwd
   - cd $START_DIR
