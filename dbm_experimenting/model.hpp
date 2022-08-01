@@ -3,8 +3,10 @@
 
 #include "detail/model_item.hpp"
 
-namespace dbm /* ::kind */ {
-template<class... ContainerTypes>
+namespace dbm {
+template<
+        class... ContainerTypes
+        >
 class model
 {
 public:
@@ -14,10 +16,10 @@ public:
 
     static constexpr size_t length = sizeof...(ContainerTypes);
 
-    constexpr model(ContainerTypes... items)
+    constexpr explicit model(ContainerTypes... items)
         : items_(std::forward<ContainerTypes>(items)...)
     {
-        validate_containers2();
+        validate_containers();
     }
 
     //    constexpr size_t size() const { return sizeof...(ContainerTypes); }
@@ -113,12 +115,12 @@ public:
 
 private:
     template<size_t idx = 0>
-    constexpr void validate_containers2()
+    constexpr void validate_containers()
     {
         if constexpr(idx < length) {
             static_assert(std::is_base_of_v<model_item_base, std::tuple_element_t<idx, tuple_type>>,
                           "Model parameter should be derived from model_item_base");
-            validate_containers2<idx+1>();
+            validate_containers<idx + 1>();
         }
     }
 

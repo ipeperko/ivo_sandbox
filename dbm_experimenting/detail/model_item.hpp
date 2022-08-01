@@ -21,7 +21,10 @@ struct model_item_traits
 
 } // namespace detail
 
-template<typename T, typename Traits = detail::model_item_traits<T>>
+template<
+        typename T,
+        typename Traits = detail::model_item_traits<T>
+        >
 class model_item : public model_item_base
 {
 public:
@@ -32,23 +35,47 @@ public:
 
     model_item() = delete;
 
-    template <typename Dummy = bool, std::enable_if_t<not traits::is_reference, Dummy> = false, typename... Parms>
+    template <
+            typename Dummy = bool,
+            std::enable_if_t<not traits::is_reference, Dummy> = false,
+            typename... Parms
+            >
     constexpr model_item(T&& val, std::tuple<Parms...>&& parms)
         : val_(std::forward<T>(val))
     {
         set_helper(parms);
     }
 
-    template <typename Dummy = bool, std::enable_if_t<traits::is_reference, Dummy> = false, typename... Parms>
+    template <
+            typename Dummy = bool,
+            std::enable_if_t<traits::is_reference, Dummy> = false,
+            typename... Parms
+            >
     constexpr model_item(T val, std::tuple<Parms...>&& parms)
         : val_(val)
     {
         set_helper(parms);
     }
 
+    // Get value
     const dereferenced_type& value() const { return val_; }
+
+    // Set value
     void value(dereferenced_type&& val) { val_ = val; }
 
+    // Get variant value
+    variant get() const override
+    {
+        return {val_};
+    }
+
+    // Set value from variant
+    void set(variant& var) override
+    {
+        val_ = std::move(std::get<dereferenced_type>(var));
+    }
+
+    // Setup methods (named types)
     void set(::dbm::kind::key const& v)
     {
         key_ = v.value();
@@ -79,6 +106,7 @@ public:
         null_ = v.value();
     }
 
+    // Alternative setup methods (chaining)
     using model_item_base::key;
     using model_item_base::tag;
     using model_item_base::primary;
@@ -101,16 +129,6 @@ public:
         return *this;
     }
 
-    variant get() const override
-    {
-        return {val_};
-    }
-
-    void set(variant& var) override
-    {
-        val_ = std::move(std::get<dereferenced_type>(var));
-    }
-
 private:
 
     template<size_t Index = 0, typename... Args>
@@ -127,30 +145,27 @@ private:
 
 } // namespace kind
 
-
-/*, typename std::enable_if_t<not std::is_reference_v<T>>*/
-template<typename T, typename... Args>
+// Helper function for creating a model item with local container
+template<
+        typename T,
+        typename... Args
+        >
 auto local(T&& val = {}, Args&&... args)
 {
     using value_type = std::decay_t<T>;
-    return kind::model_item(std::forward<value_type>(val), std::tuple<Args...>{std::forward<Args>(args)...});
+    return kind::model_item(std::forward<value_type>(val), std::make_tuple(std::forward<Args>(args)...));
 }
 
-template<typename T, typename... Args/*, typename std::enable_if_t<std::is_reference_v<T>>*/>
+// Helper function for creating a model item with binding
+template<
+        typename T,
+        typename... Args
+        >
 auto binding(T& val, Args&&... args)
 {
-    return kind::model_item<T&>(val, std::tuple<Args...>{std::forward<Args>(args)...});
+    return kind::model_item<T&>(val, std::make_tuple(std::forward<Args>(args)...));
 }
 
-//template<typename T>
-//auto local(T&& val = {})
-//{
-//    using value_type = std::decay_t<T>;
-//    return kind::model_item(std::forward<value_type>(val), std::tuple<>{});
-//}
-
 } // namespace dbm
-
-
 
 #endif //DBM_MODEL_ITEM_HPP

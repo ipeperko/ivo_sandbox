@@ -57,9 +57,9 @@ using null = detail::model_item_parameter<bool, detail::null_phantom_parameter>;
 class model_item_base
 {
 public:
-    auto key() const { return key_; }
+    auto const& key() const { return key_; }
 
-    auto tag() const { return tag_; }
+    auto const& tag() const { return tag_; }
 
     auto taggable() const { return taggable_; }
 
