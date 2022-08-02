@@ -61,13 +61,19 @@ public:
 
     auto const& tag() const { return tag_; }
 
+    auto required() const { return required_; }
+
     auto taggable() const { return taggable_; }
 
     auto primary() const { return primary_; }
 
+    auto not_null() const { return not_null_; }
+
+    auto auto_increment() const { return auto_increment_; }
+
     auto defined() const { return defined_; }
 
-    auto null() const { return null_; }
+    auto is_null() const { return is_null_; }
 
     virtual variant get() const = 0;
 
@@ -81,10 +87,14 @@ public:
 protected:
     std::string_view key_;
     std::string_view tag_;
+    bool required_ { true };
     bool taggable_ { true };
     bool primary_ { false };
+    bool not_null_ { false };
+    bool auto_increment_ { false };
     bool defined_ { false };
-    bool null_ { false };
+    bool is_null_ { false };
+//    std::optional<std::string> defaultc_; // TODO: defaultc
 };
 
 } // namespace kind

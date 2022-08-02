@@ -37,7 +37,7 @@ int main() {
         std::cout << "  val : " << container.value() << "\n";
     };
 
-    auto loc = local<int>(0, key("id"), tag("ID"));
+    auto loc = local<int>(0);
 //    std::cout << "is_reference loc  : " << decltype(loc)::traits::is_reference << "\n";
     print("loc", loc);
     print_val(loc);
@@ -72,45 +72,28 @@ int main() {
     // local(13,        key("id"),      tag("ID"),      primary(true))
     // binding(name,    key("name"),    tag("NAME")
 
+
+
     {
-        model m {
-            local(13, key("id"), tag("ID"), primary(true)),
-            binding(name, key("name"), tag("NAME")),
-            binding(my_int, key("age"), tag("AGE")),
+        auto id_validator = [](int const& id) {
+            return id >= 1;
+        };
+        auto name_validator = [](const auto& val) {
+            return !val.empty();
         };
 
-        std::cout << "model size : " << m.length << "\n";
+//        local<int, decltype(id_validator)>();
+        local<int>(1, id_validator);
+        local(1, id_validator);
 
-        auto& items = m.items();
-
-        ////    std::tuple items {
-        ////        local(13)       .key("id")      .tag("ID")      .primary(true),
-        ////        binding(name)   .key("name")    .tag("NAME"),
-        ////        binding(my_int) .key("age")     .tag("AGE"),
-        ////    };
-
-        print("tuple element ", std::get<0>(items));
-        print_val(std::get<0>(items));
-
-        print("tuple element ", std::get<1>(items));
-        print_val(std::get<1>(items));
-
-        print("tuple element ", std::get<2>(items));
-        print_val(std::get<2>(items));
-
-        std::cout << m.get("id").key() << "\n";
-        std::cout << m.get("name").key() << "\n";
-        std::cout << m.get("age").key() << "\n";
-        //std:: cout << m.get("xxx").key() << "\n";
-    }
-
-//    auto l2 = local2(13);
-
-    {
         model m {
-            local<int>() . key("id"). tag("ID"). primary(true),
-            binding(name) .key("name"). tag("NAME"),
-            binding(my_int) .key("age"). tag("AGE"),
+            local(-1, id_validator)         .key("id")      . tag("ID")     .required(true)
+                // current state
+                .defined(true) .is_null(false)
+                // db settings
+                .primary(true) .not_null(true) .auto_increment(true),
+            binding(name, name_validator)   .key("name")    . tag("NAME")   .required(true),
+            binding(my_int)                 .key("age")     . tag("AGE"),
         };
 
         auto& items = m.items();
