@@ -4,6 +4,29 @@
 #include "detail/model_item.hpp"
 
 namespace dbm {
+
+//template<class... ContainerTypes>
+//class columns
+//{
+//public:
+//    using tuple_type = std::tuple<ContainerTypes...>;
+//
+//    constexpr explicit columns(ContainerTypes&&... item)
+//        : items_(std::forward<ContainerTypes>(item)...)
+//    {
+//
+//    }
+//
+////    constexpr explicit items(tuple_type&& tup)
+////        : items_(std::forward<tuple_type>(tup))
+////    {
+////
+////    }
+//
+//    tuple_type items_;
+//};
+
+
 template<
         class... ContainerTypes
         >
@@ -16,8 +39,25 @@ public:
 
     static constexpr size_t length = sizeof...(ContainerTypes);
 
-    constexpr explicit model(ContainerTypes... items)
-        : items_(std::forward<ContainerTypes>(items)...)
+//    constexpr
+//    model(std::string_view table_name, columns<ContainerTypes...>&& columns)
+//        : items_(std::forward<tuple_type>(columns.items_))
+//        , table_name_(table_name)
+//    {
+//        validate_containers();
+//    }
+
+//    constexpr model(std::string_view table_name, ContainerTypes... items)
+//        : items_(std::forward<ContainerTypes>(items)...)
+//        , table_name_(table_name)
+//    {
+//        validate_containers();
+//    }
+
+    constexpr
+    model(std::string_view table_name, tuple_type&& items)
+        : items_(std::forward<tuple_type>(items))
+        , table_name_(table_name)
     {
         validate_containers();
     }
@@ -125,9 +165,24 @@ private:
     }
 
     tuple_type items_;
+    std::string_view table_name_;
 };
 
+template<class... ContainerTypes>
+inline auto make_columns(ContainerTypes&&... item)
+{
+    return std::make_tuple(std::forward<ContainerTypes>(item)...);
+}
 
-} // namespace dbm::kind
+template<class... ContainerTypes>
+inline auto make_model(std::string_view table_name, std::tuple<ContainerTypes...>&& items)
+{
+    model m(table_name, std::forward<std::tuple<ContainerTypes...>>(items));
+    return m;
+}
+
+
+
+} // namespace dbm
 
 #endif //DBM_MODEL_HPP

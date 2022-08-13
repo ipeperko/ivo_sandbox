@@ -5,10 +5,39 @@
 namespace dbm {
 using key = kind::key;
 using tag = kind::tag;
-using primary = kind::primary;
+//using primary = kind::primary;
 
 //template<class... ContainerTypes>
 //using model = kind::model<ContainerTypes...>;
+}
+
+auto get_model(std::string& name, int& my_int, std::function<bool(int)> id_validator)
+{
+    using namespace dbm;
+
+    auto m = make_model (
+        "my_table",
+
+        make_columns (
+                    local(-1, std::move(id_validator))
+                            .key("id")      .tag("ID")      .required(true)
+                                    // current state
+                            .defined(true) .is_null(false)
+                                    // db settings
+                            .primary(true) .not_null(true) .auto_increment(true),
+
+                    binding(name, [] (auto const& name) { return !name.empty(); })
+                            .key("name")    .tag("NAME")    .required(true),
+
+                    binding(my_int)
+                            .key("age")     .tag("AGE"),
+
+                    local<double>()
+                            .key("weight")  .taggable(false)
+        )
+    );
+
+    return m;
 }
 
 int main() {
@@ -86,17 +115,33 @@ int main() {
         local<int>(1, id_validator);
         local(1, id_validator);
 
+
         model m {
-            local(-1, id_validator)         .key("id")      . tag("ID")     .required(true)
-                // current state
-                .defined(true) .is_null(false)
-                // db settings
-                .primary(true) .not_null(true) .auto_increment(true),
-            binding(name, name_validator)   .key("name")    . tag("NAME")   .required(true),
-            binding(my_int)                 .key("age")     . tag("AGE"),
+                "my_table",
+
+                make_columns
+                        (
+                    local(-1, id_validator)
+                            .key("id")      .tag("ID")      .required(true)
+                            // current state
+                            .defined(true) .is_null(false)
+                            // db settings
+                            .primary(true) .not_null(true) .auto_increment(true),
+
+                    binding(name, [] (auto const& name) { return !name.empty(); })
+                            .key("name")    .tag("NAME")    .required(true),
+
+                    binding(my_int)
+                            .key("age")     .tag("AGE"),
+
+                    local<double>()
+                            .key("weight")  .taggable(false)
+                        )
         };
 
-        auto& items = m.items();
+        auto m2 = get_model(name, my_int, id_validator);
+
+        auto& items = m2.items();
 
         print("tuple element ", std::get<0>(items));
         print_val(std::get<0>(items));

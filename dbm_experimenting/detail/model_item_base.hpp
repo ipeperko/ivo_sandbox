@@ -32,27 +32,27 @@ struct key_phantom_parameter
 struct tag_phantom_parameter
 {
 };
-struct taggable_phantom_parameter
-{
-};
-struct primary_phantom_parameter
-{
-};
-struct defined_phantom_parameter
-{
-};
-struct null_phantom_parameter
-{
-};
+//struct taggable_phantom_parameter
+//{
+//};
+//struct primary_phantom_parameter
+//{
+//};
+//struct defined_phantom_parameter
+//{
+//};
+//struct null_phantom_parameter
+//{
+//};
 
 } // namespace detail
 
 using key = detail::model_item_parameter<std::string_view, detail::key_phantom_parameter>;
 using tag = detail::model_item_parameter<std::string_view, detail::tag_phantom_parameter>;
-using taggable = detail::model_item_parameter<bool, detail::taggable_phantom_parameter>;
-using primary = detail::model_item_parameter<bool, detail::primary_phantom_parameter>;
-using defined = detail::model_item_parameter<bool, detail::defined_phantom_parameter>;
-using null = detail::model_item_parameter<bool, detail::null_phantom_parameter>;
+//using taggable = detail::model_item_parameter<bool, detail::taggable_phantom_parameter>;
+//using primary = detail::model_item_parameter<bool, detail::primary_phantom_parameter>;
+//using defined = detail::model_item_parameter<bool, detail::defined_phantom_parameter>;
+//using null = detail::model_item_parameter<bool, detail::null_phantom_parameter>;
 
 class model_item_base
 {

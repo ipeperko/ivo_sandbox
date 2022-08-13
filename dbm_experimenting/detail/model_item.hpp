@@ -28,8 +28,6 @@ struct model_item_traits
     static constexpr bool is_reference = std::is_reference_v<T>;
 };
 
-
-
 } // namespace detail
 
 template<
@@ -93,15 +91,15 @@ public:
     }
 
     // Setup methods (named types)
-    void set(::dbm::kind::key const& v)
-    {
-        key_ = v.value();
-    }
-
-    void set(::dbm::kind::tag const& v)
-    {
-        tag_ = v.value();
-    }
+//    void set(::dbm::kind::key const& v)
+//    {
+//        key_ = v.value();
+//    }
+//
+//    void set(::dbm::kind::tag const& v)
+//    {
+//        tag_ = v.value();
+//    }
 
 //    void set(::dbm::kind::taggable const& v)
 //    {
@@ -127,6 +125,7 @@ public:
     using model_item_base::key;
     using model_item_base::tag;
     using model_item_base::required;
+    using model_item_base::taggable;
     using model_item_base::primary;
     using model_item_base::not_null;
     using model_item_base::auto_increment;
@@ -148,6 +147,12 @@ public:
     constexpr auto& required(bool val)
     {
         required_ = val;
+        return *this;
+    }
+
+    constexpr auto& taggable(bool val)
+    {
+        taggable_ = val;
         return *this;
     }
 
